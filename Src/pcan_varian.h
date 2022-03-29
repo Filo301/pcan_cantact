@@ -20,4 +20,3 @@
 #else
 #error Unknown board variant
 #endif
-
