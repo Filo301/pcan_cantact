@@ -6,7 +6,11 @@
                 "${workspaceFolder}/**"
             ],
             "defines": [
-                "CANABLE"
+                "CANABLE",
+                "HSE_VALUE=0",
+                "USE_HAL_DRIVER",
+                "STM32F042x6",
+                "NDEBUG"
             ],
             "intelliSenseMode": "gcc-arm",
             "compilerPath": "C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin/arm-none-eabi-gcc.exe"
@@ -17,7 +21,11 @@
                 "${workspaceFolder}/**"
             ],
             "defines": [
-                "ENTREE"
+                "ENTREE",
+                "HSE_VALUE=0",
+                "USE_HAL_DRIVER",
+                "STM32F042x6",
+                "NDEBUG"
             ],
             "intelliSenseMode": "gcc-arm",
             "compilerPath": "C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin/arm-none-eabi-gcc.exe"
@@ -28,7 +36,11 @@
                 "${workspaceFolder}/**"
             ],
             "defines": [
-                "CANTACT_8"
+                "CANTACT_8",
+                "HSE_VALUE=8000000",
+                "USE_HAL_DRIVER",
+                "STM32F042x6",
+                "NDEBUG"
             ],
             "intelliSenseMode": "gcc-arm",
             "compilerPath": "C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin/arm-none-eabi-gcc.exe"
@@ -39,7 +51,11 @@
                 "${workspaceFolder}/**"
             ],
             "defines": [
-                "CANTACT_16"
+                "CANTACT_16",
+                "HSE_VALUE=16000000",
+                "USE_HAL_DRIVER",
+                "STM32F042x6",
+                "NDEBUG"
             ],
             "intelliSenseMode": "gcc-arm",
             "compilerPath": "C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin/arm-none-eabi-gcc.exe"
@@ -50,7 +66,11 @@
                 "${workspaceFolder}/**"
             ],
             "defines": [
-                "OLLIE"
+                "OLLIE",
+                "HSE_VALUE=0",
+                "USE_HAL_DRIVER",
+                "STM32F042x6",
+                "NDEBUG"
             ],
             "intelliSenseMode": "gcc-arm",
             "compilerPath": "C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin/arm-none-eabi-gcc.exe"
