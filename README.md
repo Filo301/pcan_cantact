@@ -47,8 +47,6 @@
 
 ## :star: License
 
-----
-
 WTFPL
 
 [Moonglow]: https://github.com/moonglow
