@@ -2,7 +2,7 @@
 # Generic Makefile (based on gcc)
 #
 # ChangeLog :
-#	2017-02-10 - Several enhancements + project update mode
+#   2017-02-10 - Several enhancements + project update mode
 #   2015-07-22 - first version
 # ------------------------------------------------
 
@@ -10,7 +10,7 @@
 # target
 ######################################
 TARGET = pcan_$(BOARD)_hw
-TARGET_VARIANT = $(shell echo $(BOARD) | tr  '[:lower:]' '[:upper:]')
+TARGET_VARIANT = $(shell echo $(BOARD) | tr '[:lower:]' '[:upper:]')
 
 #######################################
 # paths
@@ -69,7 +69,7 @@ SZ = $(PREFIX)size
 endif
 HEX = $(CP) -O ihex
 BIN = $(CP) -O binary -S
- 
+
 #######################################
 # CFLAGS
 #######################################
@@ -87,7 +87,7 @@ MCU = $(CPU) -mthumb $(FPU) $(FLOAT-ABI)
 
 # macros for gcc
 # AS defines
-AS_DEFS = 
+AS_DEFS =
 
 # C defines
 C_DEFS =  \
@@ -98,7 +98,7 @@ $(BOARD_DEFS)
 
 
 # AS includes
-AS_INCLUDES = 
+AS_INCLUDES =
 
 # C includes
 C_INCLUDES =  \
@@ -132,8 +132,8 @@ CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 LDSCRIPT = STM32F042C6Tx_FLASH.ld
 
 # libraries
-LIBS = -lc -lm -lnosys 
-LIBDIR = 
+LIBS = -lc -lm -lnosys
+LIBDIR =
 LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
 
 .PHONY : all
@@ -150,7 +150,7 @@ cantact_8:
 entree:
 	$(MAKE) BOARD=entree DEBUG=0 OPT=-Os BOARD_FLAGS='-DHSE_VALUE=0' elf hex bin
 
-canable: 
+canable:
 	$(MAKE) BOARD=canable DEBUG=0 OPT=-Os BOARD_FLAGS='-DHSE_VALUE=0' elf hex bin
 
 ollie:
@@ -170,7 +170,7 @@ ELF_TARGET = $(BUILD_DIR)/$(TARGET).elf
 BIN_TARGET = $(BUILD_DIR)/$(TARGET).bin
 HEX_TARGET = $(BUILD_DIR)/$(TARGET).hex
 
-$(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR) 
+$(BUILD_DIR)/%.o: %.c Makefile | $(BUILD_DIR)
 	$(CC) -c $(CFLAGS) -Wa,-a,-ad,-alms=$(BUILD_DIR)/$(notdir $(<:.c=.lst)) $< -o $@
 
 $(BUILD_DIR)/%.o: %.s Makefile | $(BUILD_DIR)
@@ -182,12 +182,12 @@ $(BUILD_DIR)/$(TARGET).elf: $(OBJECTS) Makefile
 
 $(BUILD_DIR)/%.hex: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
 	$(HEX) $< $@
-	
+
 $(BUILD_DIR)/%.bin: $(BUILD_DIR)/%.elf | $(BUILD_DIR)
-	$(BIN) $< $@	
-	
+	$(BIN) $< $@
+
 $(BUILD_DIR):
-	mkdir $@		
+	mkdir $@
 
 bin: $(BIN_TARGET)
 
