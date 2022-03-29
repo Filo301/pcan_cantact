@@ -1,0 +1,60 @@
+{
+    "configurations": [
+        {
+            "name": "CANABLE",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [
+                "CANABLE"
+            ],
+            "intelliSenseMode": "gcc-arm",
+            "compilerPath": "C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin/arm-none-eabi-gcc.exe"
+        },
+        {
+            "name": "ENTREE",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [
+                "ENTREE"
+            ],
+            "intelliSenseMode": "gcc-arm",
+            "compilerPath": "C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin/arm-none-eabi-gcc.exe"
+        },
+        {
+            "name": "CANTACT_8",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [
+                "CANTACT_8"
+            ],
+            "intelliSenseMode": "gcc-arm",
+            "compilerPath": "C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin/arm-none-eabi-gcc.exe"
+        },
+        {
+            "name": "CANTACT_16",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [
+                "CANTACT_16"
+            ],
+            "intelliSenseMode": "gcc-arm",
+            "compilerPath": "C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin/arm-none-eabi-gcc.exe"
+        },
+        {
+            "name": "OLLIE",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [
+                "OLLIE"
+            ],
+            "intelliSenseMode": "gcc-arm",
+            "compilerPath": "C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin/arm-none-eabi-gcc.exe"
+        }
+    ],
+    "version": 4
+}
