@@ -1,24 +1,45 @@
 name: Build PCAN firmware
 
 on:
-  push:
-    branches: [ master ]
-  pull_request:
-    branches: [ master ]
+  # push:
+    # branches: [ master ]
+    # tags:
+      # - "v*.*.*"
+  release:
+    types: [published]
+  workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v2
 
-      #- name: arm-none-eabi-gcc
-      #  uses: fiam/arm-none-eabi-gcc@v1
-      #  with:
-      #    release: '10-2020-q4'
-      - name: install toolchain...
+      - name: Install gcc arm toolchain...
         run: sudo apt install -y gcc-arm-none-eabi
 
-      - name: build firmware...
+      - name: Build firmware...
         run: make
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: pcan_firmware
+          path: |
+            build-*/*.hex
+            build-*/*.bin
+
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Display structure of downloaded files
+        run: ls -R pcan_firmware/
+
+      - name: Attach to release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            pcan_firmware/*/*.hex
+            pcan_firmware/*/*.bin
