@@ -1,5 +1,7 @@
 # PEAK PCAN firmware for STM32F042C6T6(STM32F072C8T6) based boards <a title="Hits" target="_blank" href="https://github.com/SummerFalls/pcan_cantact"><img src="https://hits.b3log.org/SummerFalls/pcan_cantact.svg"></a>
 
+> 本仓库已加入 Github Actions 自动构建工作流，可 Fork 本仓库后自行根据硬件更改引脚配置后进行自动化地构建。
+
 [![Build PCAN firmware](https://github.com/SummerFalls/pcan_cantact/actions/workflows/firmware_build.yml/badge.svg)](https://github.com/SummerFalls/pcan_cantact/actions/workflows/firmware_build.yml)
 
 ## :dart: 目标硬件 / Target Hardware
