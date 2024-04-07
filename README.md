@@ -10,6 +10,7 @@
 - [CANable](https://canable.io/) - opensource USB-CAN adapter based on CANtact project `make canable`
 - [Entreé](https://github.com/tuna-f1sh/entree) - opensource USB-C CAN adapter based on CANable project `make entree`
 - [Ollie](https://github.com/slimelec/ollie-hw) - opensource USB-CAN adapter with isolated USB `make ollie`
+- [SH-C30A](https://www.deshide.com/product-details.html?pid=384242&_t=1671089557) - opensource USB-CAN adapter project `make sh_c30a`
 - Any other STM32F042C6T6(STM32F072C8T6) based boards with external or internal OSC.
 
 <div style="margin: 0 auto; width: 100%;">
