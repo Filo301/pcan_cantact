@@ -74,6 +74,21 @@
             ],
             "intelliSenseMode": "gcc-arm",
             "compilerPath": "C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin/arm-none-eabi-gcc.exe"
+        },
+        {
+            "name": "SH_C30A",
+            "includePath": [
+                "${workspaceFolder}/**"
+            ],
+            "defines": [
+                "SH_C30A",
+                "HSE_VALUE=24000000",
+                "USE_HAL_DRIVER",
+                "STM32F042x6",
+                "NDEBUG"
+            ],
+            "intelliSenseMode": "gcc-arm",
+            "compilerPath": "C:/Program Files (x86)/GNU Arm Embedded Toolchain/10 2021.10/bin/arm-none-eabi-gcc.exe"
         }
     ],
     "version": 4
