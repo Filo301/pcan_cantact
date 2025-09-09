@@ -1,5 +1,5 @@
 #include "pcan_led.h"
-#include "pcan_timestamp.h"
+#include "timestamp.h"
 #include "pcan_varian.h"
 #include "stm32f0xx_hal.h"
 #include <assert.h>
@@ -28,7 +28,7 @@ void pcan_led_init(void)
 void pcan_led_set_mode(int led, int mode, uint16_t arg)
 {
     assert(led < LED_TOTAL);
-    uint16_t ts              = pcan_timestamp_millis();
+    uint16_t ts              = ts_ms16();
 
     led_mode_array[led].mode = mode;
     if (!led_mode_array[led].timestamp)
@@ -69,7 +69,7 @@ static void pcan_led_update_state(int led, uint8_t state)
 
 void pcan_led_poll(void)
 {
-    uint16_t ts_ms = pcan_timestamp_millis();
+    uint16_t ts_ms = ts_ms16();
 
     for (int i = 0; i < LED_TOTAL; i++)
     {
