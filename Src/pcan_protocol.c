@@ -1,7 +1,7 @@
 #include "pcan_can.h"
 #include "pcan_led.h"
 #include "pcan_packet.h"
-#include "pcan_timestamp.h"
+#include "timestamp.h"
 #include "pcan_usb.h"
 #include "punker.h"
 #include <assert.h>
@@ -234,13 +234,13 @@ void pcan_record_buffer_commit(PCAN_RECORD_BUFFER_EX *prec, uint16_t size)
 
 uint16_t pcan_record_buffer_flush(PCAN_RECORD_BUFFER_EX *prec)
 {
-    uint16_t ts_ticks = pcan_timestamp_ticks();
+    uint16_t ts_ticks = ts_pcan42_now();
     int      res, flush_size;
 
     if (prec->pos <= HEADER_SIZE)
     {
         /* try to send ZLP, original 800 */
-        if (pcan_device.last_flush && (((uint16_t)(ts_ticks - pcan_device.last_flush)) >= PCAN_TICKS_FROM_US(800)))
+        if (pcan_device.last_flush && (((uint16_t)(ts_ticks - pcan_device.last_flush)) >= TS_PCAN42_FROM_US(800)))
         {
             res = pcan_flush_data(&data_fsm, 0, 0);
             if (res)
@@ -500,20 +500,20 @@ static uint8_t pcan_decode_data_frame(uint8_t *ptr, uint16_t size, uint8_t flags
         size -= sizeof(uint8_t);
     }
 
-    msg.timestamp = pcan_timestamp_ticks();
+    msg.timestamp = ts_pcan42_now();
 
     pcan_led_set_mode(LED_CH0_TX, LED_MODE_BLINK_FAST, 237);
 
 #if WAIT_FOR_TXSLOTS
-    const uint16_t ts_poll = pcan_timestamp_ticks();
+    const uint16_t ts_poll = ts_pcan42_now();
     /* need more time to send data... ? */
     while (pcan_can_send_message(&msg) < 0)
     {
         /* USB will get NACK and we will not miss other data */
         pcan_can_poll();
-        uint16_t ts_diff = pcan_timestamp_ticks() - ts_poll;
+        uint16_t ts_diff = ts_pcan42_now() - ts_poll;
         /* we can't tramsit couse bus off or timeout ? */
-        if ((pcan_device.can.err & PCAN_USB_ERROR_BUS_OFF) || (ts_diff >= PCAN_TICKS_FROM_US(1000000u)))
+        if ((pcan_device.can.err & PCAN_USB_ERROR_BUS_OFF) || (ts_diff >= TS_PCAN42_FROM_US(1000000u)))
         {
             /* tx buffer overflow, drop all data */
             pcan_device.can.err |= PCAN_USB_ERROR_TXFULL;
@@ -564,7 +564,7 @@ void pcan_timesync_event(PCAN_RECORD_BUFFER_EX *prec)
     if (!ptr)
         return;
 
-    uint16_t timestamp16 = pcan_timestamp_ticks();
+    uint16_t timestamp16 = ts_pcan42_now();
 
     pack_u8(ptr, sl);
     ptr += 1;
@@ -660,7 +660,7 @@ void pcan_protocol_process_command(uint8_t *ptr, uint16_t size)
                     if (pcan_device.bus_active)
                     {
                         /* provide first timesync event */
-                        pcan_device.last_timestamp_sync = pcan_timestamp_ticks();
+                        pcan_device.last_timestamp_sync = ts_pcan42_now();
                         pcan_timesync_event(&pcan_records);
                     }
                     /* led state */
@@ -809,12 +809,12 @@ void pcan_protocol_init(void)
 
 void pcan_protocol_poll(void)
 {
-    uint16_t ts_ms = pcan_timestamp_ticks();
+    uint16_t ts_ms = ts_pcan42_now();
 
     if (pcan_device.bus_active)
     {
         /* each ~1000 ms */
-        if ((((uint16_t)(ts_ms - pcan_device.last_timestamp_sync)) >= PCAN_TICKS_FROM_US(1000000u)))
+        if ((((uint16_t)(ts_ms - pcan_device.last_timestamp_sync)) >= TS_PCAN42_FROM_US(1000000u)))
         {
             pcan_device.last_timestamp_sync = ts_ms;
             pcan_timesync_event(&pcan_records);

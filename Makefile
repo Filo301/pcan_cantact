@@ -30,7 +30,7 @@ Src/pcan_usb.c \
 Src/pcan_can.c \
 Src/pcan_led.c \
 Src/pcan_protocol.c \
-Src/pcan_timestamp.c \
+Src/timestamp.c \
 Src/system_stm32f0xx.c \
 Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_ll_usb.c \
 Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_pcd.c \
@@ -103,6 +103,7 @@ AS_INCLUDES =
 # C includes
 C_INCLUDES =  \
 -ISrc \
+-IInc \
 -IDrivers/STM32F0xx_HAL_Driver/Inc \
 -IMiddlewares/ST/STM32_USB_Device_Library/Core/Inc \
 -IDrivers/CMSIS/Device/ST/STM32F0xx/Include \

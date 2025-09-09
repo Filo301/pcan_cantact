@@ -1,5 +1,5 @@
 #include "pcan_can.h"
-#include "pcan_timestamp.h"
+#include "timestamp.h"
 #include "pcan_varian.h"
 #include <assert.h>
 #include <stm32f0xx_hal.h>
@@ -235,7 +235,7 @@ static void pcan_can_rx_frame(CAN_HandleTypeDef *hcan, uint32_t fifo)
     }
 
     msg.dlc       = hdr.DLC;
-    msg.timestamp = pcan_timestamp_ticks();
+    msg.timestamp = ts_pcan42_now();
 
     if (can_dev.rx_cb)
     {

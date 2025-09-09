@@ -1,6 +1,6 @@
 #include "pcan_led.h"
 #include "pcan_protocol.h"
-#include "pcan_timestamp.h"
+#include "timestamp.h"
 #include "pcan_usb.h"
 #include "pcan_varian.h"
 #include "stm32f0xx_hal.h"
@@ -95,7 +95,7 @@ int main(void)
 
     pcan_usb_init();
     pcan_led_init();
-    pcan_timestamp_init();
+    ts_init();
     pcan_protocol_init();
 
     pcan_led_set_mode(LED_CH0_RX, LED_MODE_BLINK_SLOW, 0);
