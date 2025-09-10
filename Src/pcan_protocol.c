@@ -8,6 +8,13 @@
 #include <stdint.h>
 #include <string.h>
 
+#ifndef USB_IN_STAGING
+#define USB_IN_STAGING 1
+#endif
+static uint8_t usb_in_buf[USB_IN_STAGING][64];
+static uint8_t usb_in_idx;
+static uint8_t usb_in_inflight;
+
 #define SJA1000_BASICCAN 0
 #define SJA1000_PELICAN  1
 static struct

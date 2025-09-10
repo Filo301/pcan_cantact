@@ -7,16 +7,42 @@
 # ------------------------------------------------
 
 ######################################
-# target
+# target / profile selection
 ######################################
-TARGET = pcan_$(BOARD)_hw
+# Usage:
+#   make f042
+#   make f072
+
+MCU ?= F042
+BOARD ?= cantact_16
+
+BUILD_DIR := build/$(shell echo $(MCU) | tr A-Z a-z)
+OUT_TAG   := $(shell echo $(MCU) | tr A-Z a-z)
+
+TARGET = pcan_cantact_$(OUT_TAG)
 TARGET_VARIANT = $(shell echo $(BOARD) | tr '[:lower:]' '[:upper:]')
 
-#######################################
-# paths
-#######################################
-# Build path
-BUILD_DIR = build-$(BOARD)
+$(shell mkdir -p $(BUILD_DIR))
+
+# ================= PER-MCU SETTINGS ==================
+ifeq ($(MCU),F042)
+  MCU_DEFS  += -DSTM32F042x6 -DMCU_STM32F042
+  LDSCRIPT  = STM32F042C6Tx_FLASH.ld
+  MCU_DEFS  += -DRXQ_LEN=64 -DTXQ_LEN=32 -DUSB_IN_STAGING=1
+  HEAP_SIZE = 0x000
+  STACK_SIZE= 0x400
+else ifeq ($(MCU),F072)
+  MCU_DEFS  += -DSTM32F072xB -DMCU_STM32F072
+  LDSCRIPT  = STM32F072C8Tx_FLASH.ld
+  MCU_DEFS  += -DRXQ_LEN=256 -DTXQ_LEN=128 -DUSB_IN_STAGING=2
+  HEAP_SIZE = 0x200
+  STACK_SIZE= 0x800
+else
+  $(error Unknown MCU=$(MCU). Use F042 or F072)
+endif
+
+# ================= COMMON FLAGS ======================
+
 
 ######################################
 # source
@@ -32,6 +58,7 @@ Src/pcan_led.c \
 Src/pcan_protocol.c \
 Src/timestamp.c \
 Src/system_stm32f0xx.c \
+Src/syscalls_min.c \
 Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_ll_usb.c \
 Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_pcd.c \
 Drivers/STM32F0xx_HAL_Driver/Src/stm32f0xx_hal_pcd_ex.c \
@@ -82,8 +109,8 @@ CPU = -mcpu=cortex-m0
 # float-abi
 
 
-# mcu
-MCU = $(CPU) -mthumb $(FPU) $(FLOAT-ABI)
+# mcu flags
+MCFLAGS = $(CPU) -mthumb $(FPU) $(FLOAT-ABI)
 
 # macros for gcc
 # AS defines
@@ -92,9 +119,9 @@ AS_DEFS =
 # C defines
 C_DEFS =  \
 -DUSE_HAL_DRIVER \
--DSTM32F042x6 \
 -DNDEBUG \
-$(BOARD_DEFS)
+$(BOARD_DEFS) \
+$(MCU_DEFS)
 
 
 # AS includes
@@ -111,9 +138,9 @@ C_INCLUDES =  \
 
 
 # compile gcc flags
-ASFLAGS = $(MCU) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fno-common -fdata-sections -ffunction-sections
+ASFLAGS = $(MCFLAGS) $(AS_DEFS) $(AS_INCLUDES) $(OPT) -Wall -fno-common -fdata-sections -ffunction-sections
 
-CFLAGS = $(MCU) $(C_DEFS) $(C_INCLUDES) $(OPT) -Wall -Wpedantic -Wextra -fno-common -fdata-sections -ffunction-sections -std=c99 \
+CFLAGS = $(MCFLAGS) $(C_DEFS) $(C_INCLUDES) $(OPT) -std=c99 \
 $(BOARD_FLAGS) \
 -D$(TARGET_VARIANT)
 
@@ -130,12 +157,28 @@ CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 # LDFLAGS
 #######################################
 # link script
-LDSCRIPT = STM32F042C6Tx_FLASH.ld
+LDSCRIPT ?=
 
 # libraries
 LIBS = -lc -lm -lnosys
 LIBDIR =
-LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref -Wl,--gc-sections
+LDFLAGS = $(MCFLAGS) -specs=nano.specs $(LIBDIR) $(LIBS) -Wl,-Map=$(BUILD_DIR)/$(TARGET).map,--cref
+
+# ================= COMMON FLAGS ======================
+CFLAGS  += -Os -flto -ffunction-sections -fdata-sections -fno-common
+CFLAGS  += -Wall -Wextra -Wshadow -Wconversion -Wformat=2 -Wundef \
+           -Wno-missing-field-initializers
+LDFLAGS += -Wl,--gc-sections -Wl,-T$(LDSCRIPT) \
+           -Wl,--defsym,_Min_Heap_Size=$(HEAP_SIZE) \
+           -Wl,--defsym,_Min_Stack_Size=$(STACK_SIZE)
+
+# ======== convenience phony targets =========
+.PHONY: f042 f072
+f042: clean
+	$(MAKE) MCU=F042 BOARD=$(BOARD) $(BOARD)
+
+f072: clean
+	$(MAKE) MCU=F072 BOARD=$(BOARD) $(BOARD)
 
 .PHONY : all
 
@@ -143,22 +186,22 @@ LDFLAGS = $(MCU) -specs=nano.specs -T$(LDSCRIPT) $(LIBDIR) $(LIBS) -Wl,-Map=$(BU
 all: cantact_16 cantact_8 entree canable ollie sh_c30a
 
 cantact_16:
-	$(MAKE) BOARD=cantact_16 DEBUG=0 OPT=-Os BOARD_FLAGS='-DHSE_VALUE=16000000' elf hex bin
+	$(MAKE) MCU=$(MCU) BOARD=cantact_16 DEBUG=0 OPT=-Os BOARD_FLAGS='-DHSE_VALUE=16000000' elf hex bin
 
 cantact_8:
-	$(MAKE) BOARD=cantact_8 DEBUG=0 OPT=-Os BOARD_FLAGS='-DHSE_VALUE=8000000' elf hex bin
+	$(MAKE) MCU=$(MCU) BOARD=cantact_8 DEBUG=0 OPT=-Os BOARD_FLAGS='-DHSE_VALUE=8000000' elf hex bin
 
 entree:
-	$(MAKE) BOARD=entree DEBUG=0 OPT=-Os BOARD_FLAGS='-DHSE_VALUE=0' elf hex bin
+	$(MAKE) MCU=$(MCU) BOARD=entree DEBUG=0 OPT=-Os BOARD_FLAGS='-DHSE_VALUE=0' elf hex bin
 
 canable:
-	$(MAKE) BOARD=canable DEBUG=0 OPT=-Os BOARD_FLAGS='-DHSE_VALUE=0' elf hex bin
+	$(MAKE) MCU=$(MCU) BOARD=canable DEBUG=0 OPT=-Os BOARD_FLAGS='-DHSE_VALUE=0' elf hex bin
 
 ollie:
-	$(MAKE) BOARD=ollie DEBUG=0 OPT=-Os BOARD_FLAGS='-DHSE_VALUE=0' elf hex bin
+	$(MAKE) MCU=$(MCU) BOARD=ollie DEBUG=0 OPT=-Os BOARD_FLAGS='-DHSE_VALUE=0' elf hex bin
 
 sh_c30a:
-	$(MAKE) BOARD=sh_c30a DEBUG=0 OPT=-Os BOARD_FLAGS='-DHSE_VALUE=24000000' elf hex bin
+	$(MAKE) MCU=$(MCU) BOARD=sh_c30a DEBUG=0 OPT=-Os BOARD_FLAGS='-DHSE_VALUE=24000000' elf hex bin
 
 #######################################
 # build the application
