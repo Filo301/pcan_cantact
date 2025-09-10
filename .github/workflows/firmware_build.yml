@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        mcu: [f042, f072]
+        mcu: [F042, F072]
 
     steps:
       - name: Checkout
@@ -26,10 +26,10 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: pcan_cantact_${{ matrix.mcu }}
-          path: build/cantact_16/${{ matrix.mcu }}/*
+          path: build/${{ matrix.mcu == 'F042' && 'f042' || 'f072' }}/*
 
       - name: Attach to release
         if: github.event_name == 'release'
         uses: softprops/action-gh-release@v1
         with:
-          files: build/cantact_16/${{ matrix.mcu }}/*.{hex,bin}
+          files: build/${{ matrix.mcu == 'F042' && 'f042' || 'f072' }}/*.{hex,bin}

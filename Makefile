@@ -16,9 +16,8 @@
 MCU ?= F042
 BOARD ?= cantact_16
 
-MCU_TAG = $(shell echo $(MCU) | tr A-Z a-z)
-BUILD_DIR = build/$(BOARD)/$(MCU_TAG)
-OUT_TAG = $(BOARD)_$(MCU_TAG)
+BUILD_DIR := build/$(shell echo $(MCU) | tr A-Z a-z)
+OUT_TAG   := $(shell echo $(MCU) | tr A-Z a-z)
 
 TARGET = pcan_cantact_$(OUT_TAG)
 TARGET_VARIANT = $(shell echo $(BOARD) | tr '[:lower:]' '[:upper:]')
