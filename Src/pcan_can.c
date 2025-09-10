@@ -1,11 +1,16 @@
 #include "pcan_can.h"
-#include "pcan_timestamp.h"
+#include "timestamp.h"
 #include "pcan_varian.h"
 #include <assert.h>
 #include <stm32f0xx_hal.h>
 #include <string.h>
 
-#define CAN_TX_FIFO_SIZE (100)
+#ifndef RXQ_LEN
+#define RXQ_LEN 96
+#endif
+#ifndef TXQ_LEN
+#define TXQ_LEN 48
+#endif
 static CAN_HandleTypeDef g_hcan = { .Instance = CAN };
 #define INTERNAL_CAN_IT_FLAGS                                                                                                                                          \
     (CAN_IT_TX_MAILBOX_EMPTY | CAN_IT_RX_FIFO0_MSG_PENDING | CAN_IT_RX_FIFO1_MSG_PENDING | CAN_IT_BUSOFF | CAN_IT_ERROR_WARNING | CAN_IT_ERROR_PASSIVE | CAN_IT_BUSOFF \
@@ -21,9 +26,12 @@ static struct
     uint32_t rx_errs;
     uint32_t rx_ovfs;
 
-    can_message_t tx_fifo[CAN_TX_FIFO_SIZE];
+    can_message_t tx_fifo[TXQ_LEN];
     uint32_t      tx_head;
     uint32_t      tx_tail;
+    can_message_t rx_fifo[RXQ_LEN];
+    uint32_t      rx_head;
+    uint32_t      rx_tail;
     void (*rx_cb)(can_message_t *);
     void (*can_err_cb)(uint8_t err, uint8_t rx_err, uint8_t tx_err);
 } can_dev = { 0 };
@@ -153,7 +161,7 @@ static void pcan_can_flush_tx(void)
         return;
     /* update fifo index */
     uint32_t tail = can_dev.tx_tail + 1;
-    if (tail == CAN_TX_FIFO_SIZE)
+    if (tail == TXQ_LEN)
         tail = 0;
     can_dev.tx_tail = tail;
 }
@@ -164,7 +172,7 @@ int pcan_can_send_message(const can_message_t *p_msg)
         return 0;
 
     uint32_t head = can_dev.tx_head + 1;
-    if (head == CAN_TX_FIFO_SIZE)
+    if (head == TXQ_LEN)
         head = 0;
     /* overflow ? just skip it */
     if (head == can_dev.tx_tail)
@@ -235,7 +243,7 @@ static void pcan_can_rx_frame(CAN_HandleTypeDef *hcan, uint32_t fifo)
     }
 
     msg.dlc       = hdr.DLC;
-    msg.timestamp = pcan_timestamp_ticks();
+    msg.timestamp = ts_pcan42_now();
 
     if (can_dev.rx_cb)
     {
