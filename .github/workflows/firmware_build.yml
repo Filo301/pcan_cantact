@@ -1,10 +1,6 @@
 name: Build PCAN firmware
 
 on:
-  # push:
-    # branches: [ master ]
-    # tags:
-      # - "v*.*.*"
   release:
     types: [published]
   workflow_dispatch:
@@ -12,34 +8,28 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        mcu: [f042, f072]
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
       - name: Install gcc arm toolchain...
         run: sudo apt install -y gcc-arm-none-eabi
 
       - name: Build firmware...
-        run: make
+        run: make ${{ matrix.mcu }}
 
       - name: Upload Artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
-          name: pcan_firmware
-          path: |
-            build-*/*.hex
-            build-*/*.bin
-
-      - name: Download Artifacts
-        uses: actions/download-artifact@v3
-
-      - name: Display structure of downloaded files
-        run: ls -R pcan_firmware/
+          name: pcan_cantact_${{ matrix.mcu }}
+          path: build/cantact_16/${{ matrix.mcu }}/*
 
       - name: Attach to release
+        if: github.event_name == 'release'
         uses: softprops/action-gh-release@v1
         with:
-          files: |
-            pcan_firmware/*/*.hex
-            pcan_firmware/*/*.bin
+          files: build/cantact_16/${{ matrix.mcu }}/*.{hex,bin}
